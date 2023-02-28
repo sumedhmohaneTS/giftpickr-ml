@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-def get_mongo_client(uri: str):
+def get_mongo_client(uri: str='mongodb+srv://giftpickr-user:olGrScebMhNj6gnQ@giftpickr-cluster.nisokxj.mongodb.net/test'):
     return MongoClient(uri)
 
 class MongoDB:

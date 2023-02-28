@@ -3,7 +3,7 @@ from database.mongo_db import get_mongo_client
 class ProductMetadataRepository:
     def __init__(self):
         self.client = get_mongo_client()
-        self.db = self.client["mydatabase"]
+        self.db = self.client["gift-recommendation-engine"]
         self.collection = self.db["ProductMetadata"]
 
     def find_by_product_id(self, product_id):

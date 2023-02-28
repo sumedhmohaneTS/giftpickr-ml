@@ -1,5 +1,6 @@
 from database.mongo_db import get_mongo_client
 from repo.product_metadata_repository import ProductMetadataRepository
+from app.models.product_metadata import ProductMetadata
 
 class ProductMetadataService:
     def __init__(self):
@@ -13,4 +14,10 @@ class ProductMetadataService:
     @staticmethod
     def get_product_metadata(age=None, gender=None, occasion=None, relationship=None, interests=None):
         product_metadata = self.product_metadata_repository.get_product_metadata(age, gender, occasion, relationship, interests)
+        return product_metadata
+
+    def create(product_id, age=None, gender=None, occasion=None, relationship=None, interests=None):
+        data = ProductMetadata(product_id, age, gender, occasion, relationship, interests)
+
+        product_metadata = self.product_metadata_repository.create(data)
         return product_metadata
