@@ -15,5 +15,11 @@ product_metadata_controller.register(api)
 recommendation_controller = RecommendationController()
 recommendation_controller.register(api)
 
+
+@app.route('/health')
+def health():
+    return {'status': 'ok'}
+
+
 if __name__ == "__main__":
     app.run(debug=True)
