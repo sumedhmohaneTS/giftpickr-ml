@@ -1,13 +1,19 @@
+import json
+from bson import ObjectId
 from flask import Flask
-from app.controllers.product_metadata_controller import product_metadata_controller
-from app.controllers.recommendation_controller import recommendation_controller
+from flask_restful import Api
+from controllers.product_metadata_controller import ProductMetadataController
+from controllers.recommendation_controller import RecommendationController
 
 app = Flask(__name__)
+api = Api(app)
 
-# Register the blueprints
-app.register_blueprint(product_metadata_controller, url_prefix='/product-metadata')
-app.register_blueprint(recommendation_controller, url_prefix='/recommed')
+# Register the controllers
+product_metadata_controller = ProductMetadataController()
+product_metadata_controller.register(api)
 
+recommendation_controller = RecommendationController()
+recommendation_controller.register(api)
 
 if __name__ == "__main__":
     app.run(debug=True)

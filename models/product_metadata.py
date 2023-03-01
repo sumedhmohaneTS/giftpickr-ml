@@ -3,18 +3,18 @@ class ProductMetadata:
         self.product_id = product_id
         self.age = age
         self.gender = gender
-        self.interests = interests or []
         self.occasions = occasions or []
         self.relationships = relationships or []
+        self.interests = interests or []
 
-    def to_dict(self):
+    def to_dict(cls):
         return {
-            'product_id': self.product_id,
-            'age': self.age,
-            'gender': self.gender,
-            'interests': self.interests,
-            'occasions': self.occasions,
-            'relationships': self.relationships,
+            'product_id': cls.product_id,
+            'age': cls.age,
+            'gender': cls.gender,
+            'interests': cls.interests,
+            'occasions': cls.occasions,
+            'relationships': cls.relationships,
         }
 
     @staticmethod

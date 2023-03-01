@@ -1,21 +1,30 @@
 from database.mongo_db import get_mongo_client
 
+
 class ProductMetadataRepository:
     def __init__(self):
         self.client = get_mongo_client()
         self.db = self.client["gift-recommendation-engine"]
         self.collection = self.db["ProductMetadata"]
+        self.defaultProjection = {
+            '_id': 0,   # Exclude _id field
+        }
 
     def find_by_product_id(self, product_id):
-        product_metadata = self.collection.find_one({"product_id": product_id})
+        product_metadata = self.collection.find_one(
+            {"product_id": product_id}, self.defaultProjection)
         return product_metadata
 
     def create(self, product_metadata):
         result = self.collection.insert_one(product_metadata)
-        return result
+        inserted_id = result.inserted_id
+        inserted_document = self.collection.find_one(
+            {"_id": inserted_id}, self.defaultProjection)
+        return inserted_document
 
     def update(self, product_id, product_metadata):
-        result = self.collection.update_one({"product_id": product_id}, {"$set": product_metadata})
+        result = self.collection.update_one(
+            {"product_id": product_id}, {"$set": product_metadata})
         return result
 
     def delete(self, product_id):

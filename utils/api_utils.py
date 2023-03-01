@@ -1,17 +1,19 @@
 # utils/api_utils.py
 
-from flask import jsonify
 
-def success_response(data):
+def success_response(message, data=None):
     response = {
         'status': 'success',
-        'data': data
+        'message': message,
     }
-    return jsonify(response)
+    if data:
+        response['data'] = data
+    return response
+
 
 def error_response(error_message):
     response = {
         'status': 'error',
         'message': error_message
     }
-    return jsonify(response)
+    return response
