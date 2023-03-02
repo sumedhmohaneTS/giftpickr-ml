@@ -8,8 +8,8 @@ class RecommendationController(Resource):
         self.service = RecommendationService()
 
     @classmethod
-    def register(cls, api):
-        api.add_resource(cls, '/recommendation')
+    def register(cls, api, prefix):
+        api.add_resource(cls, prefix+'/recommendation')
 
     def get(self):
         req_data = request.json

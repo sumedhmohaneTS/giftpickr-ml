@@ -11,8 +11,8 @@ class ProductMetadataController(Resource):
         self.product_metadata_service = ProductMetadataService()
 
     @classmethod
-    def register(cls, api):
-        api.add_resource(cls, '/product-metadata')
+    def register(cls, api, prefix):
+        api.add_resource(cls, prefix+'/product-metadata')
 
     def post(self):
 
