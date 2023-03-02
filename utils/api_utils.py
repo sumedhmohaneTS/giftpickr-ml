@@ -5,6 +5,7 @@ def success_response(message, data=None):
     response = {
         'status': 'success',
         'message': message,
+        'data': None
     }
     if data:
         response['data'] = data

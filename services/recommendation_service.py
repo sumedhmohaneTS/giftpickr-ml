@@ -1,5 +1,6 @@
 
 from models.product_metadata import ProductMetadata
+from models.user_preference import UserPreference
 from services.product_metadata_service import ProductMetadataService
 from utils.ml_utils import get_recommendations
 from typing import List
@@ -9,15 +10,18 @@ class RecommendationService:
     def __init__(self, ):
         self.product_metadata_service = ProductMetadataService()
 
-    @staticmethod
-    def get_recommendations(age: int = None, gender: str = None, occasion: str = None, relationship: str = None, interests: List[str] = None) -> List[ProductMetadata]:
+    def get_recommendations(self, age: int = None, gender: str = None, occasion: str = None, relationship: str = None, interests: List[str] = None) -> List[ProductMetadata]:
         metadata = []
         if age or gender or occasion or relationship or interests:
-            # fetch product metadata based on user inputs
-            metadata = ProductMetadataService.get_product_metadata(
-                age=age, gender=gender, occasion=occasion, relationship=relationship, interests=interests)
+            # fetch all product metadata
+            metadata = self.product_metadata_service.get_all_for_recommendation(
+                age, gender)
 
         # get recommendations based on the product metadata
-        recommended_products = get_recommendations(metadata)
+        user_preference = UserPreference(
+            age, gender, occasion, relationship, interests).to_dict()
+
+        recommended_products = get_recommendations(
+            user_preference, metadata)
 
         return recommended_products

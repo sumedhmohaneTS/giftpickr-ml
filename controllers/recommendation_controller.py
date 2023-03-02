@@ -12,18 +12,21 @@ class RecommendationController(Resource):
         api.add_resource(cls, prefix+'/recommendation')
 
     def get(self):
-        req_data = request.json
-        age = req_data.get('age')
-        gender = req_data.get('gender').split(",")
-        occasion = req_data.get('occasion').split(",")
-        relationship = req_data.get('relationship').split(",")
-        interests = req_data.get('interests').split(",")
+        req_data = request.args
+
+        age = int(req_data.get('age'))
+        gender = req_data.get('gender')
+        relationship = (req_data.get('relationship'))
+        occasion = (req_data.get('occasion'))
+        if req_data.get('interests') is not None:
+            interests = (req_data.get('interests')).split(
+                ",")  # can be multiple
 
         # check if inputs are None, set default values if necessary
         if age is None:
             age = 25  # default age
         if gender is None:
-            gender = ['male', 'female']  # default gender
+            gender = 'any'  # default gender
         if occasion is None:
             occasion = ['christmas', 'holi', 'birthday', 'wedding', 'anniversary',
                         'graduation', 'valentine', 'mothersday', 'fathersday']  # default occasion
@@ -34,7 +37,7 @@ class RecommendationController(Resource):
             interests = ['sports', 'technology', 'travel',
                          'books', 'food']  # default interests
 
-        result = RecommendationService.get_recommendations(
+        result = self.service.get_recommendations(
             age, gender, occasion, relationship, interests)
 
         return result
