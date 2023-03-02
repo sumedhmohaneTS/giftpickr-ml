@@ -8,7 +8,7 @@ from controllers.recommendation_controller import RecommendationController
 app = Flask(__name__)
 api = Api(app)
 
-api_prefix = 'ml-api'
+api_prefix = '/ml-api'
 
 # Register the controllers
 product_metadata_controller = ProductMetadataController()
