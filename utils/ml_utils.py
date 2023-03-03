@@ -1,5 +1,6 @@
 # utils/ml_utils.py
 
+import math
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
@@ -58,7 +59,8 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=5):
         similarity_scores, key=lambda x: x[1], reverse=True)
 
     # get the indices of the top n most similar products
-    top_indices = [i[0] for i in similarity_scores[1:num_recommendations+1]]
+    top_indices = [
+        i[0] for i in similarity_scores[:num_recommendations] if not math.isnan(i[1])]
 
     # get the product IDs of the top n most similar products
     top_products = list(product_metadata.iloc[top_indices]['product_id'])
