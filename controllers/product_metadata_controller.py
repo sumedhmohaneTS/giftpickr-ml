@@ -3,7 +3,7 @@ from flask import jsonify, request
 from flask_restful import Resource
 from models.product_metadata import ProductMetadata
 from services.product_metadata_service import ProductMetadataService
-from utils.api_utils import success_response
+from utils.api_utils import success_response, error_response
 
 
 class ProductMetadataController(Resource):
@@ -17,6 +17,9 @@ class ProductMetadataController(Resource):
     def post(self):
 
         requestData = request.get_json()
+
+        if requestData['product_id'] is None:
+            return error_response("Product Id is null"), 400
 
         dbObj = ProductMetadata(requestData['product_id'],
                                 requestData['minAge'],
