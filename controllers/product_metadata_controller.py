@@ -21,13 +21,18 @@ class ProductMetadataController(Resource):
         if requestData['product_id'] is None:
             return error_response("Product Id is null"), 400
 
+        occasions = requestData['occasions']
+        relationships = requestData['relationships']
+        interests = requestData['interests']
+
         dbObj = ProductMetadata(requestData['product_id'],
                                 requestData['minAge'],
                                 requestData['maxAge'],
                                 requestData['gender'],
-                                requestData['occasions'].split(','),
-                                requestData['relationships'].split(','),
-                                requestData['interests'].split(',')
+                                requestData.get('occasions', '').split(','),
+                                requestData.get(
+                                    'relationships', '').split(','),
+                                requestData.get('interests', '').split(',')
                                 )
 
         product_metadata = self.product_metadata_service.create(requestData['product_id'],

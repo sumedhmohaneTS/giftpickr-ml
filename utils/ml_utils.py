@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 
+# TODO Handle any values and score !!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 def get_recommendations(user_pref, metadata_list, num_recommendations=5):
 

@@ -7,6 +7,7 @@ class ProductMetadata:
         self.occasions = occasions or []
         self.relationships = relationships or []
         self.interests = interests or []
+        self.score = 1
 
     def to_dict(cls):
         return {
@@ -17,6 +18,7 @@ class ProductMetadata:
             'interests': cls.interests,
             'occasions': cls.occasions,
             'relationships': cls.relationships,
+            'score': 1,
         }
 
     @staticmethod
@@ -29,4 +31,5 @@ class ProductMetadata:
             interests=data.get('interests', []),
             occasions=data.get('occasions', []),
             relationships=data.get('relationships', []),
+            score=data.get('score', 1),
         )
