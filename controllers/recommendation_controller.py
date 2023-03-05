@@ -2,6 +2,8 @@ from flask import request
 from services.recommendation_service import RecommendationService
 from flask_restful import Api, Resource
 
+from utils.api_utils import success_response
+
 
 class RecommendationController(Resource):
     def __init__(self):
@@ -40,4 +42,7 @@ class RecommendationController(Resource):
         result = self.service.get_recommendations(
             age, gender, occasion, relationship, interests)
 
-        return result
+        response = success_response(
+            'Product Recommendations', result)
+
+        return response

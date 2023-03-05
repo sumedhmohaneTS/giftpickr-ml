@@ -37,7 +37,7 @@ class ProductMetadataRepository:
 
     def get_all_for_recommendation(self, age, gender):
         query = {}
-        if gender:
+        if (gender is not None) & (gender != 'any'):
             query['gender'] = {'$in': ['any', gender]}
         if age:
             query['min_age'] = {'$lte': age}

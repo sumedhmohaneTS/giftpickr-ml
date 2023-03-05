@@ -21,14 +21,10 @@ class ProductMetadataController(Resource):
         if requestData['product_id'] is None:
             return error_response("Product Id is null"), 400
 
-        occasions = requestData['occasions']
-        relationships = requestData['relationships']
-        interests = requestData['interests']
-
         dbObj = ProductMetadata(requestData['product_id'],
                                 requestData['minAge'],
                                 requestData['maxAge'],
-                                requestData['gender'],
+                                requestData.get('gender', '').split(','),
                                 requestData.get('occasions', '').split(','),
                                 requestData.get(
                                     'relationships', '').split(','),
@@ -38,7 +34,7 @@ class ProductMetadataController(Resource):
         product_metadata = self.product_metadata_service.create(requestData['product_id'],
                                                                 dbObj.to_dict())
         response = success_response(
-            'Product metadata upserted successfully', product_metadata,)
+            'Product metadata upserted successfully', product_metadata)
         return response, 200
 
     def get(self):

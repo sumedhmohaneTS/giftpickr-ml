@@ -3,10 +3,10 @@ class ProductMetadata:
         self.product_id = product_id
         self.min_age = min_age
         self.max_age = max_age
-        self.gender = gender
-        self.occasions = occasions or []
-        self.relationships = relationships or []
-        self.interests = interests or []
+        self.gender = gender or ['any']
+        self.occasions = occasions or ['any']
+        self.relationships = relationships or ['any']
+        self.interests = interests or ['any']
         self.score = 1
 
     def to_dict(cls):
