@@ -21,26 +21,26 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=5):
         'product_id', 'interests', 'occasions', 'relationships', 'gender', 'min_age', 'max_age']]
 
     # combine the metadata columns into a single string for each product
-    # product_metadata['metadata'] = product_metadata.apply(
-    #     lambda x: ' '.join(x.dropna().astype(str)), axis=1)
+    product_metadata['metadata'] = product_metadata.apply(
+        lambda x: ' '.join(x.dropna().astype(str)), axis=1)
     # product_metadata['metadata'] = product_metadata.apply(
     #     lambda x: ' '.join([str(x['score'])] + x.dropna().astype(str)), axis=1)
 
-    product_metadata['metadata'] = product_metadata.apply(
-        lambda x: ' '.join([str(x['score'])] if 'score' in x and pd.notnull(x['score']) else [] + x.dropna().astype(str)), axis=1)
+    # product_metadata['metadata'] = product_metadata.apply(
+    #     lambda x: ' '.join([str(x['score'])] if 'score' in x and pd.notnull(x['score']) else [] + x.dropna().astype(str)), axis=1)
 
     # create a CountVectorizer object to create a sparse matrix of word counts for each product metadata string
     count = CountVectorizer()
     count_matrix = count.fit_transform(product_metadata['metadata'])
-    score_matrix = count_matrix[:, count.vocabulary_['score']]
-    count_matrix = hstack([count_matrix, score_matrix])
+    # score_matrix = count_matrix[:, count.vocabulary_['score']]
+    # count_matrix = hstack([count_matrix, score_matrix])
 
     # calculate the cosine similarity matrix
-    score_arr = np.array(product_metadata['score'])
-    score_arr = score_arr.reshape((len(score_arr), 1))
-    cosine_sim = cosine_similarity(
-        hstack([count_matrix, score_arr]), dense_output=False)
-    # cosine_sim = cosine_similarity(count_matrix, count_matrix)
+    # score_arr = np.array(product_metadata['score'])
+    # score_arr = score_arr.reshape((len(score_arr), 1))
+    # cosine_sim = cosine_similarity(
+    #     hstack([count_matrix, score_arr]), dense_output=False)
+    cosine_sim = cosine_similarity(count_matrix, count_matrix)
 
     # get the subset of product metadata based on user preferences
     subset_metadata = product_metadata.copy()
