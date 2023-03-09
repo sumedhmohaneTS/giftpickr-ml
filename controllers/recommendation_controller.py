@@ -19,7 +19,11 @@ class RecommendationController(Resource):
         age = int(req_data.get('age'))
         gender = req_data.get('gender')
         relationship = (req_data.get('relationship'))
-        occasion = (req_data.get('occasion'))
+
+        if req_data.get('occasion') is not None:
+            occasion = (req_data.get('occasion')).split(
+                ",")  # can be multiple
+
         if req_data.get('interests') is not None:
             interests = (req_data.get('interests')).split(
                 ",")  # can be multiple
