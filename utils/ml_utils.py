@@ -23,8 +23,11 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=5):
     # combine the metadata columns into a single string for each product
     # product_metadata['metadata'] = product_metadata.apply(
     #     lambda x: ' '.join(x.dropna().astype(str)), axis=1)
+    # product_metadata['metadata'] = product_metadata.apply(
+    #     lambda x: ' '.join([str(x['score'])] + x.dropna().astype(str)), axis=1)
+
     product_metadata['metadata'] = product_metadata.apply(
-        lambda x: ' '.join([str(x['score'])] + x.dropna().astype(str)), axis=1)
+        lambda x: ' '.join([str(x['score'])] if 'score' in x and pd.notnull(x['score']) else [] + x.dropna().astype(str)), axis=1)
 
     # create a CountVectorizer object to create a sparse matrix of word counts for each product metadata string
     count = CountVectorizer()
