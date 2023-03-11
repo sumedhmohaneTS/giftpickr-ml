@@ -22,7 +22,7 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=5):
 
     # generate a score based on rating and reviews
     product_metadata['score'] = product_metadata['rating'] * \
-        np.log10(product_metadata['num_reviews'] + 1)
+        np.log10(product_metadata['no_of_reviews'] + 1)
 
     product_metadata = product_metadata.drop(
         ['rating', 'no_of_reviews'], axis=1)
