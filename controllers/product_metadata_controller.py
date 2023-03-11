@@ -22,8 +22,8 @@ class ProductMetadataController(Resource):
             return error_response("Product Id is null"), 400
 
         dbObj = ProductMetadata(requestData['product_id'],
-                                requestData['minAge'],
-                                requestData['maxAge'],
+                                int(requestData['minAge']),
+                                int(requestData['maxAge']),
                                 requestData.get('gender', '').split(','),
                                 requestData.get('occasions', '').split(','),
                                 requestData.get(

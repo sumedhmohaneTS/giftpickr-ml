@@ -44,3 +44,16 @@ class ProductMetadataRepository:
             query['max_age'] = {'$gte': age}
         products = self.collection.find(query, self.defaultProjection)
         return [product for product in products]
+
+    def convertToInt(self):
+        products = self.collection.find({})
+        for product in products:
+            self.collection.update_one({
+                "_id": product.get('_id'),
+                "product_id": product.get('product_id'),
+            }, {
+                "$set": {
+                    "min_age": int(product.get('min_age')),
+                    "max_age": int(product.get('max_age'))
+                }
+            })

@@ -32,3 +32,6 @@ class ProductMetadataService:
 
     def get_all_for_recommendation(self, age, gender):
         return self.product_metadata_repository.get_all_for_recommendation(age, gender)
+
+    def convertToInt(self):
+        return self.product_metadata_repository.convertToInt()
