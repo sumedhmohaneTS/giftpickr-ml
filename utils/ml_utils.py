@@ -18,28 +18,23 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=5):
     metadata_df = pd.DataFrame(metadata_list)
     # create a new DataFrame with only the product metadata columns
     product_metadata = metadata_df[[
-        'product_id', 'interests', 'occasions', 'relationships', 'gender', 'min_age', 'max_age']]
+        'product_id', 'interests', 'occasions', 'relationships', 'gender', 'min_age', 'max_age', 'no_of_reviews', 'rating']]
+
+    # generate a score based on rating and reviews
+    product_metadata['score'] = product_metadata['rating'] * \
+        np.log10(product_metadata['num_reviews'] + 1)
+
+    product_metadata = product_metadata.drop(
+        ['rating', 'no_of_reviews'], axis=1)
 
     # combine the metadata columns into a single string for each product
     product_metadata['metadata'] = product_metadata.apply(
         lambda x: ' '.join(x.dropna().astype(str)), axis=1)
-    # product_metadata['metadata'] = product_metadata.apply(
-    #     lambda x: ' '.join([str(x['score'])] + x.dropna().astype(str)), axis=1)
-
-    # product_metadata['metadata'] = product_metadata.apply(
-    #     lambda x: ' '.join([str(x['score'])] if 'score' in x and pd.notnull(x['score']) else [] + x.dropna().astype(str)), axis=1)
 
     # create a CountVectorizer object to create a sparse matrix of word counts for each product metadata string
     count = CountVectorizer()
     count_matrix = count.fit_transform(product_metadata['metadata'])
-    # score_matrix = count_matrix[:, count.vocabulary_['score']]
-    # count_matrix = hstack([count_matrix, score_matrix])
 
-    # calculate the cosine similarity matrix
-    # score_arr = np.array(product_metadata['score'])
-    # score_arr = score_arr.reshape((len(score_arr), 1))
-    # cosine_sim = cosine_similarity(
-    #     hstack([count_matrix, score_arr]), dense_output=False)
     cosine_sim = cosine_similarity(count_matrix, count_matrix)
 
     # get the subset of product metadata based on user preferences
@@ -76,9 +71,20 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=5):
     similarity_scores = sorted(
         similarity_scores, key=lambda x: x[1], reverse=True)
 
+    # use the generated score along with similarity to rank the products
+    ranked_scores = []
+    for i in range(len(product_metadata)):
+        if i in product_indices:
+            ranked_scores.append(
+                (i, similarity_scores[i][1] * product_metadata.loc[i, 'score']))
+        else:
+            ranked_scores.append((i, 0))
+
+    ranked_scores = sorted(ranked_scores, key=lambda x: x[1], reverse=True)
+
     # get the indices of the top n most similar products
     top_indices = [
-        i[0] for i in similarity_scores[:num_recommendations] if not math.isnan(i[1])]
+        i[0] for i in ranked_scores[:num_recommendations] if not math.isnan(i[1])]
 
     # get the product IDs of the top n most similar products
     top_products = list(product_metadata.iloc[top_indices]['product_id'])

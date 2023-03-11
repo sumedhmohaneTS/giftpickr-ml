@@ -28,7 +28,10 @@ class ProductMetadataController(Resource):
                                 requestData.get('occasions', '').split(','),
                                 requestData.get(
                                     'relationships', '').split(','),
-                                requestData.get('interests', '').split(',')
+                                requestData.get('interests', '').split(','),
+                                requestData.get(
+                                    'no_of_reviews', 0),
+                                requestData.get('rating', 0.0)
                                 )
 
         product_metadata = self.product_metadata_service.create(requestData['product_id'],

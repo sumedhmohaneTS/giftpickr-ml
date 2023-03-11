@@ -1,5 +1,5 @@
 class ProductMetadata:
-    def __init__(self, product_id, min_age=None, max_age=None, gender=None, occasions=None, relationships=None, interests=None):
+    def __init__(self, product_id, min_age=None, max_age=None, gender=None, occasions=None, relationships=None, interests=None, no_of_reviews=None, rating=None):
         self.product_id = product_id
         self.min_age = min_age
         self.max_age = max_age
@@ -7,6 +7,8 @@ class ProductMetadata:
         self.occasions = occasions or ['any']
         self.relationships = relationships or ['any']
         self.interests = interests or ['any']
+        self.no_of_reviews = no_of_reviews or 0
+        self.rating = rating or 0.0
         self.score = 1
 
     def to_dict(cls):
@@ -18,6 +20,8 @@ class ProductMetadata:
             'interests': cls.interests,
             'occasions': cls.occasions,
             'relationships': cls.relationships,
+            'no_of_reviews': cls.no_of_reviews,
+            'rating': cls.rating,
             'score': 1,
         }
 
@@ -31,5 +35,7 @@ class ProductMetadata:
             interests=data.get('interests', []),
             occasions=data.get('occasions', []),
             relationships=data.get('relationships', []),
+            no_of_reviews=data.get('no_of_reviews', 0),
+            rating=data.get('rating', 0.0),
             score=data.get('score', 1),
         )
