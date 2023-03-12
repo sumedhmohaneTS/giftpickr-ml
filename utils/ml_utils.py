@@ -40,20 +40,24 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
     # get the subset of product metadata based on user preferences
     subset_metadata = product_metadata.copy()
 
-    if ('interests' in user_pref) & (subset_metadata.empty == False) & (user_pref['interests'] != 'any') & ('any' not in subset_metadata['interests']):
+    # if ('interests' in user_pref) and (subset_metadata.empty == False) and (user_pref['interests'] != 'any') and ('any' not in subset_metadata['interests']):
+    #     subset_metadata = subset_metadata[subset_metadata['interests'].apply(
+    #         lambda x: len(set(x).intersection(set(user_pref['interests']))) > 0)]
+
+    if ('interests' in user_pref) & (subset_metadata.empty == False) and ('any' not in user_pref['interests']):
         subset_metadata = subset_metadata[subset_metadata['interests'].apply(
-            lambda x: len(set(x).intersection(set(user_pref['interests']))) > 0)]
+            lambda x: 'any' in x or any(
+                interest in x for interest in user_pref['interests'])
+        )]
 
-    if ('occasion' in user_pref) & (subset_metadata.empty == False) & ('any' not in subset_metadata['occasions']):
-        if isinstance(user_pref['occasion'], str) & (user_pref['occasion'] != 'any'):
-            subset_metadata = subset_metadata[[user_pref['occasion'].lower() in [o.lower(
-            ) for o in occasions] for occasions in subset_metadata['occasions']]]
-        elif isinstance(user_pref['occasion'], list):
-            subset_metadata = subset_metadata[[any(o.lower() in [occ.lower(
-            ) for occ in occasions] for o in user_pref['occasion']) for occasions in subset_metadata['occasions']]]
+    if ('occasion' in user_pref) & (subset_metadata.empty == False) and ('any' not in user_pref['occasion']):
+        subset_metadata = subset_metadata[subset_metadata['occasions'].apply(
+            lambda x: 'any' in x or any(
+                occasion in x for occasion in user_pref['occasion'])
+        )]
 
-    if ('relationship' in user_pref) & (subset_metadata.empty == False) & ('any' not in subset_metadata['relationships']):
-        if isinstance(user_pref['relationship'], str) & (user_pref['relationship'] != 'any'):
+    if ('relationship' in user_pref) and (subset_metadata.empty == False) and ('any' not in subset_metadata['relationships']):
+        if isinstance(user_pref['relationship'], str) and (user_pref['relationship'] != 'any'):
             subset_metadata = subset_metadata[[user_pref['relationship'].lower() in [o.lower(
             ) for o in relationships] for relationships in subset_metadata['relationships']]]
         elif isinstance(user_pref['relationship'], list):
@@ -75,8 +79,8 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
     ranked_scores = []
     for i in range(len(product_metadata)):
         if i in product_indices:
-            similarity_weight = 0.75
-            product_weight = 0.25
+            similarity_weight = 1
+            product_weight = 0
             final_score = similarity_weight * \
                 similarity_scores[i][1] + product_weight * \
                 product_metadata.loc[i, 'score']
