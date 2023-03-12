@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 # TODO Handle any values and score !!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-def get_recommendations(user_pref, metadata_list, num_recommendations=5):
+def get_recommendations(user_pref, metadata_list, num_recommendations=15):
 
     if len(metadata_list) == 0:
         return []
