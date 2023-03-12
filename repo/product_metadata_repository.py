@@ -57,3 +57,12 @@ class ProductMetadataRepository:
                     "max_age": int(product.get('max_age'))
                 }
             })
+
+    def addPrices(self, product_id, price):
+        self.collection.update_one({
+            "product_id": product_id,
+        }, {
+            "$set": {
+                "price": float(price),
+            }
+        })

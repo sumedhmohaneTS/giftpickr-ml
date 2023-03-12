@@ -1,3 +1,5 @@
+import json
+import requests
 from database.mongo_db import get_mongo_client
 from repo.product_metadata_repository import ProductMetadataRepository
 
@@ -26,6 +28,19 @@ class ProductMetadataService:
         product_metadata = self.product_metadata_repository.update(
             product_id, data)
         return product_metadata
+
+    def addPricesToProduct(self):
+        url = ("https://giftpickr.com/api/external/products")
+        response = requests.get(url, headers={})
+
+        products = json.loads(response.text).get('data', [])
+        for product in products:
+            product_id = product.get('id', None)
+            if product_id is not None:
+                self.product_metadata_repository.addPrices(
+                    product_id, product.get('price', 0.0))
+
+        print(products)
 
     def get_all(self):
         return self.product_metadata_repository.get_all()
