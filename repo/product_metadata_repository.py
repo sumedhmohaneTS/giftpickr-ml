@@ -43,9 +43,9 @@ class ProductMetadataRepository:
             query['min_age'] = {'$lte': age}
             query['max_age'] = {'$gte': age}
         if minPrice:
-            query['price'] = {'$gte': minPrice}
-        if minPrice:
-            query['price'] = {'$lte': maxPrice}
+            query['price'] = {}
+            if maxPrice:
+                query['price'] = {'$lte': maxPrice, '$gte': minPrice}
         products = self.collection.find(query, self.defaultProjection)
         return [product for product in products]
 
