@@ -39,7 +39,11 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=12):
 
     # get the subset of product metadata based on user preferences
     subset_metadata = product_metadata.copy()
-    other_subset_metadata = subset_metadata
+    other_interest_subset_metadata = pd.DataFrame()
+    is_interest_any = 'any' in user_pref['interests']
+
+    if not is_interest_any:
+        other_interest_subset_metadata = subset_metadata
 
     # if ('interests' in user_pref) and (subset_metadata.empty == False) and (user_pref['interests'] != 'any') and ('any' not in subset_metadata['interests']):
     #     subset_metadata = subset_metadata[subset_metadata['interests'].apply(
@@ -50,29 +54,32 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=12):
             lambda x:  any(
                 interest in x for interest in user_pref['interests'])
         )]
-        other_subset_metadata = other_subset_metadata[other_subset_metadata['interests'].apply(
-            lambda x: 'any' in x
-        )]
+        if not other_interest_subset_metadata.empty:
+            other_interest_subset_metadata = other_interest_subset_metadata[other_interest_subset_metadata['interests'].apply(
+                lambda x: 'any' in x
+            )]
 
     if ('occasion' in user_pref) & (subset_metadata.empty == False) and ('any' not in user_pref['occasion']):
         subset_metadata = subset_metadata[subset_metadata['occasions'].apply(
             lambda x: 'any' in x or any(
                 occasion in x for occasion in user_pref['occasion'])
         )]
-        other_subset_metadata = other_subset_metadata[other_subset_metadata['occasions'].apply(
-            lambda x: 'any' in x or any(
-                occasion in x for occasion in user_pref['occasion'])
-        )]
+        if not other_interest_subset_metadata.empty:
+            other_interest_subset_metadata = other_interest_subset_metadata[other_interest_subset_metadata['occasions'].apply(
+                lambda x: 'any' in x or any(
+                    occasion in x for occasion in user_pref['occasion'])
+            )]
 
     if ('relationship' in user_pref) and (subset_metadata.empty == False) and user_pref['relationship'].lower() != 'any':
         subset_metadata = subset_metadata[[user_pref['relationship'].lower() in [r.lower(
         ) for r in relationships] or 'any' in relationships for relationships in subset_metadata['relationships']]]
-        other_subset_metadata = other_subset_metadata[[user_pref['relationship'].lower() in [r.lower(
-        ) for r in relationships] or 'any' in [r.lower() for r in relationships] for relationships in other_subset_metadata['relationships']]]
+        if not other_interest_subset_metadata.empty:
+            other_interest_subset_metadata = other_interest_subset_metadata[[user_pref['relationship'].lower() in [r.lower(
+            ) for r in relationships] or 'any' in [r.lower() for r in relationships] for relationships in other_interest_subset_metadata['relationships']]]
 
     # get the row indices of the products in the subset
     product_indices = subset_metadata.index.tolist()
-    other_product_indices = other_subset_metadata.index.tolist()
+    other_product_indices = other_interest_subset_metadata.index.tolist()
 
     # get the cosine similarity scores for the products in the subset
     similarity_scores = [(i, cosine_sim[i][product_indices].mean())
