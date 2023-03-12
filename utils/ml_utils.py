@@ -18,11 +18,11 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
     metadata_df = pd.DataFrame(metadata_list)
     # create a new DataFrame with only the product metadata columns
     product_metadata = metadata_df[[
-        'product_id', 'interests', 'occasions', 'relationships', 'gender', 'min_age', 'max_age', 'no_of_reviews', 'rating']]
+        'product_id', 'interests', 'occasions', 'relationships', 'gender', 'min_age', 'max_age', 'no_of_reviews', 'rating', 'price']]
 
-    # generate a score based on rating and reviews
-    product_metadata['score'] = product_metadata['rating'] * \
-        np.log10(product_metadata['no_of_reviews'] + 1)
+    # generate a score based on rating, reviews, and price
+    product_metadata['score'] = product_metadata['rating'] * np.log10(
+        product_metadata['no_of_reviews'] + 1) / np.log10(product_metadata['price'] + 1)
 
     product_metadata = product_metadata.drop(
         ['rating', 'no_of_reviews'], axis=1)
@@ -75,8 +75,12 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
     ranked_scores = []
     for i in range(len(product_metadata)):
         if i in product_indices:
-            ranked_scores.append(
-                (i, similarity_scores[i][1] * product_metadata.loc[i, 'score']))
+            similarity_weight = 0.75
+            product_weight = 0.25
+            final_score = similarity_weight * \
+                similarity_scores[i][1] + product_weight * \
+                product_metadata.loc[i, 'score']
+            ranked_scores.append((i, final_score))
         else:
             ranked_scores.append((i, 0))
 
