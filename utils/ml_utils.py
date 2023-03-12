@@ -91,7 +91,24 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
         i[0] for i in ranked_scores[:num_recommendations] if not math.isnan(i[1])]
 
     # get the product IDs of the top n most similar products
-    top_products = list(product_metadata.iloc[top_indices]['product_id'])
+    productIds = list(product_metadata.iloc[top_indices]['product_id'])
 
-    result_dict = {"productIds": top_products}
+    # get the product metadata of the top n most similar products
+    top_products_metadata = product_metadata.iloc[top_indices]
+
+    # create a dictionary with the product IDs as keys and the product metadata as values
+    top_products_dict = {}
+    for i in range(len(top_products_metadata)):
+        product_id = int(top_products_metadata.iloc[i]['product_id'])
+        product_data = top_products_metadata.iloc[i].to_dict()
+        data = {
+            'interests': product_data.get('interests', []),
+            'gender': product_data.get('gender', []),
+            'relationships': product_data.get('relationships', []),
+            'occasions': product_data.get('occasions', []),
+        }
+        top_products_dict[product_id] = data
+
+    result_dict = {"productIds": productIds, "products": top_products_dict}
+
     return result_dict
