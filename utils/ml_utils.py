@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 # TODO Handle any values and score !!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-def get_recommendations(user_pref, metadata_list, num_recommendations=15):
+def get_recommendations(user_pref, metadata_list, num_recommendations=12):
 
     if len(metadata_list) == 0:
         return []
@@ -68,7 +68,7 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
         subset_metadata = subset_metadata[[user_pref['relationship'].lower() in [r.lower(
         ) for r in relationships] or 'any' in relationships for relationships in subset_metadata['relationships']]]
         other_subset_metadata = other_subset_metadata[[user_pref['relationship'].lower() in [r.lower(
-        ) for r in relationships] or 'any' in relationships for relationships in other_subset_metadata['relationships']]]
+        ) for r in relationships] or 'any' in [r.lower() for r in relationships] for relationships in other_subset_metadata['relationships']]]
 
     # get the row indices of the products in the subset
     product_indices = subset_metadata.index.tolist()
@@ -105,9 +105,9 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
 
     # use the generated score along with similarity to rank the products
     other_ranked_scores = []
-    for i in range(len(other_subset_metadata)):
+    for i in range(len(product_metadata)):
         final_score = 0
-        if i in product_indices:
+        if i in other_product_indices:
             similarity_weight = 0.8
             product_weight = 0.2
             final_score = similarity_weight * \
@@ -121,12 +121,15 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
         other_ranked_scores, key=lambda x: x[1], reverse=True)
 
     # get the indices of the top n most similar products
+    num_recommendations = min(num_recommendations, len(product_indices))
     top_indices = [
         i[0] for i in ranked_scores[:num_recommendations] if not math.isnan(i[1])]
 
     # get the indices of the top n most other similar products
+    other_num_recommendations = min(
+        num_recommendations, len(other_product_indices))
     other_top_indices = [
-        i[0] for i in other_ranked_scores[:num_recommendations] if not math.isnan(i[1])]
+        i[0] for i in other_ranked_scores[:other_num_recommendations] if not math.isnan(i[1])]
 
     # get the product IDs of the top n most similar products
     productIds = list(product_metadata.iloc[top_indices]['product_id'])
