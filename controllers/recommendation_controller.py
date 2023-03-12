@@ -20,6 +20,9 @@ class RecommendationController(Resource):
         gender = req_data.get('gender')
         relationship = (req_data.get('relationship'))
 
+        minPrice = float(req_data.get('minPrice', 0.0))
+        maxPrice = float(req_data.get('maxPrice', 200000.0))
+
         if req_data.get('occasion') is not None:
             occasion = (req_data.get('occasion')).split(
                 ",")  # can be multiple
@@ -44,7 +47,7 @@ class RecommendationController(Resource):
                          'books', 'food']  # default interests
 
         result = self.service.get_recommendations(
-            age, gender, occasion, relationship, interests)
+            age, gender, occasion, relationship, interests, minPrice, maxPrice)
 
         response = success_response(
             'Product Recommendations', result)

@@ -10,13 +10,13 @@ class RecommendationService:
     def __init__(self, ):
         self.product_metadata_service = ProductMetadataService()
 
-    def get_recommendations(self, age: int = None, gender: str = None, occasion: str = None, relationship: str = None, interests: List[str] = None) -> List[ProductMetadata]:
+    def get_recommendations(self, age: int = None, gender: str = None, occasion: str = None, relationship: str = None, interests: List[str] = None, minPrice, maxPrice) -> List[ProductMetadata]:
         metadata = []
         # self.product_metadata_service.convertToInt()
         if age or gender or occasion or relationship or interests:
             # fetch all product metadata
             metadata = self.product_metadata_service.get_all_for_recommendation(
-                age, gender)
+                age, gender, minPrice, maxPrice)
 
         # get recommendations based on the product metadata
         user_preference = UserPreference(

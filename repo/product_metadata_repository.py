@@ -35,13 +35,17 @@ class ProductMetadataRepository:
         products = self.collection.find({}, self.defaultProjection)
         return [product for product in products]
 
-    def get_all_for_recommendation(self, age, gender):
+    def get_all_for_recommendation(self, age, gender, minPrice, maxPrice):
         query = {}
         if (gender is not None) & (gender != 'any'):
             query['gender'] = {'$in': ['any', gender]}
         if age:
             query['min_age'] = {'$lte': age}
             query['max_age'] = {'$gte': age}
+        if minPrice:
+            query['price'] = {'$gte': minPrice}
+        if minPrice:
+            query['price'] = {'$lte': maxPrice}
         products = self.collection.find(query, self.defaultProjection)
         return [product for product in products]
 
