@@ -56,13 +56,9 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
                 occasion in x for occasion in user_pref['occasion'])
         )]
 
-    if ('relationship' in user_pref) and (subset_metadata.empty == False) and ('any' not in subset_metadata['relationships']):
-        if isinstance(user_pref['relationship'], str) and (user_pref['relationship'] != 'any'):
-            subset_metadata = subset_metadata[[user_pref['relationship'].lower() in [o.lower(
-            ) for o in relationships] for relationships in subset_metadata['relationships']]]
-        elif isinstance(user_pref['relationship'], list):
-            subset_metadata = subset_metadata[[any(o.lower() in [occ.lower(
-            ) for occ in relationships] for o in user_pref['relationship']) for relationships in subset_metadata['relationships']]]
+    if ('relationship' in user_pref) and (subset_metadata.empty == False) and user_pref['relationship'].lower() != 'any':
+        subset_metadata = subset_metadata[[user_pref['relationship'].lower() in [r.lower(
+        ) for r in relationships] or 'any' in relationships for relationships in subset_metadata['relationships']]]
 
     # get the row indices of the products in the subset
     product_indices = subset_metadata.index.tolist()
@@ -79,8 +75,8 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=15):
     ranked_scores = []
     for i in range(len(product_metadata)):
         if i in product_indices:
-            similarity_weight = 1
-            product_weight = 0
+            similarity_weight = 0.8
+            product_weight = 0.2
             final_score = similarity_weight * \
                 similarity_scores[i][1] + product_weight * \
                 product_metadata.loc[i, 'score']
