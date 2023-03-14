@@ -210,8 +210,35 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
         lambda x: ' '.join(x.dropna().astype(str)), axis=1)
 
     # combine the interest, occasion, and relationship columns into a single string for each product
-    product_metadata['ior'] = product_metadata[['interests', 'occasions', 'relationships']].apply(
-        lambda x: ' '.join(x.dropna().astype(str)), axis=1)
+
+    interests = user_pref['interests'] if 'any' not in user_pref['interests'] else [
+        'any']
+    occasion = user_pref['occasion'] if 'any' not in user_pref['occasion'] else [
+        'any']
+    relationship = [user_pref['relationship']] if 'any' != user_pref['relationship'] else [
+        'any']
+
+    interests_col = product_metadata['interests'].apply(
+        lambda x: 'any' if 'any' in interests
+        else '\', \''.join(str(val) for val in interests) if ' a' in x else '\', \''.join([str(val) for val in x if str(val) in interests]))
+
+    occasions_col = product_metadata['occasions'].apply(
+        lambda x: 'any' if 'any' in occasion
+        else '\', \''.join(str(val) for val in occasion) if ' a' in x else '\', \''.join([str(val) for val in x if str(val) in occasion]))
+
+    relationships_col = product_metadata['relationships'].apply(
+        lambda x: 'any' if 'any' in relationship
+        else '\', \''.join(str(val) for val in relationship) + ' a' if 'any' in x else '\', \''.join([str(val) for val in x if str(val) in relationship]))
+
+    product_metadata['interestCol'] = interests_col
+    product_metadata['occasionCol'] = occasions_col
+    product_metadata['relationshipCol'] = relationships_col
+    product_metadata['ior'] = '[\''+product_metadata['interestCol'] + '\'] [\'' + \
+        product_metadata['occasionCol'] + '\'] [\'' + \
+        product_metadata['relationshipCol'] + '\']'
+
+    # product_metadata['ior'] = product_metadata[['interests', 'occasions', 'relationships']].apply(
+    #     lambda x: ' '.join(x.dropna().astype(str)), axis=1)
 
     # get the subset of product metadata based on user preferences
     subset_metadata = product_metadata.copy()
@@ -259,8 +286,6 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
 
     count = CountVectorizer()
 
-    product_metadata['ior_str'] = product_metadata['ior'].apply(
-        lambda x: str(x))
     count_matrix = count.fit_transform(product_metadata['ior'])
     # ior_matrix = count.transform(product_metadata['ior_str'])
     user_pref_matrix = count.transform([user_pref_ior])
@@ -276,10 +301,10 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
     # use the generated score along with similarity to rank the products
     ranked_scores = []
 
-    # temp = []
+    temp = []
     for i in range(len(product_metadata)):
         final_score = 0
-        # results = []
+        results = []
         if i in product_indices:
             similarity_weight = 0.7
             product_weight = 0.3
