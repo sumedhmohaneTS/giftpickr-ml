@@ -50,3 +50,6 @@ class ProductMetadataService:
 
     def convertToInt(self):
         return self.product_metadata_repository.convertToInt()
+
+    def addBoyfriend(self):
+        return self.product_metadata_repository.addBoyfriend()

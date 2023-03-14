@@ -70,3 +70,16 @@ class ProductMetadataRepository:
                 "price": float(price),
             }
         })
+
+    def addBoyfriend(self):
+        products = self.collection.find(
+            {'relationships': ['friend', 'mother', 'wife', 'child', 'sister']})
+        for product in products:
+            self.collection.update_one({
+                "_id": product.get('_id'),
+                "product_id": product.get('product_id'),
+            }, {
+                "$set": {
+                    "relationships": ['friend', 'mother', 'wife', 'child', 'sister', 'girlfriend']
+                }
+            })
