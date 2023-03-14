@@ -219,16 +219,25 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
         'any']
 
     interests_col = product_metadata['interests'].apply(
-        lambda x: 'any' if 'any' in interests
-        else '\', \''.join(str(val) for val in interests) if ' a' in x else '\', \''.join([str(val) for val in x if str(val) in interests]))
+        lambda x:
+        'any' if 'any' in interests
+        else
+        '\', \''.join(sorted(str(val) for val in interests)) + ' a' if 'any' in x
+        else '\', \''.join(sorted([str(val) for val in x if str(val) in interests])))
 
     occasions_col = product_metadata['occasions'].apply(
-        lambda x: 'any' if 'any' in occasion
-        else '\', \''.join(str(val) for val in occasion) if ' a' in x else '\', \''.join([str(val) for val in x if str(val) in occasion]))
+        lambda x:
+        'any' if 'any' in occasion
+        else
+        '\', \''.join(sorted(str(val) for val in occasion)) + ' a' if 'any' in x
+        else '\', \''.join(sorted([str(val) for val in x if str(val) in occasion])))
 
     relationships_col = product_metadata['relationships'].apply(
-        lambda x: 'any' if 'any' in relationship
-        else '\', \''.join(str(val) for val in relationship) + ' a' if 'any' in x else '\', \''.join([str(val) for val in x if str(val) in relationship]))
+        lambda x:
+        'any' if 'any' in relationship
+        else
+        '\', \''.join(sorted(str(val) for val in relationship)) + ' a' if 'any' in x
+        else '\', \''.join(sorted([str(val) for val in x if str(val) in relationship])))
 
     product_metadata['interestCol'] = interests_col
     product_metadata['occasionCol'] = occasions_col
@@ -281,8 +290,11 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
     other_product_indices = other_interest_subset_metadata.index.tolist()
 
     # create a CountVectorizer object to create a sparse matrix of word counts for each product metadata string
+    user_pref['interests'].sort()
+    user_pref['occasion'].sort()
     user_pref_ior = ''+str(user_pref['interests']) + ' ' + \
-        str(user_pref['occasion']) + ' [\'' + user_pref['relationship'] + '\']'
+        str(user_pref['occasion']) + \
+        ' [\'' + user_pref['relationship'] + '\']'
 
     count = CountVectorizer()
 
