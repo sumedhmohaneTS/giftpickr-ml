@@ -192,9 +192,11 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
         'product_id', 'interests', 'occasions', 'relationships', 'gender', 'min_age', 'max_age', 'no_of_reviews', 'rating', 'price']]
 
     # generate a score based on rating, reviews, and price
-    mean_price = product_metadata['price'].mean()
+    median_price = np.median(product_metadata['price'])
+    mad = np.median(np.abs(product_metadata['price'] - median_price))
+    scaling_factor = 1.4826  # scaling factor for MAD to approximate standard deviation
     score = product_metadata['rating'] * np.log10(
-        product_metadata['no_of_reviews'] + 1) * (1 / (1+abs(product_metadata['price']-mean_price)))
+        product_metadata['no_of_reviews'] + 1) * (1 / (1 + scaling_factor * abs(product_metadata['price'] - median_price) / mad))
 
     # normalize the score between 0 and 1
     scaler = MinMaxScaler()
