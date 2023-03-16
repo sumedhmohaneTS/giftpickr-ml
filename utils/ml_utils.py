@@ -192,8 +192,9 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
         'product_id', 'interests', 'occasions', 'relationships', 'gender', 'min_age', 'max_age', 'no_of_reviews', 'rating', 'price']]
 
     # generate a score based on rating, reviews, and price
+    mean_price = product_metadata['price'].mean()
     score = product_metadata['rating'] * np.log10(
-        product_metadata['no_of_reviews'] + 1) / np.log10(product_metadata['price'] + 1)
+        product_metadata['no_of_reviews'] + 1) * (1 / (1+abs(product_metadata['price']-mean_price)))
 
     # normalize the score between 0 and 1
     scaler = MinMaxScaler()
