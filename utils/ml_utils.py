@@ -212,7 +212,9 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=240):
     product_metadata['metadata'] = product_metadata.apply(
         lambda x: ' '.join(x.dropna().astype(str)), axis=1)
 
-    # combine the interest, occasion, and relationship columns into a single string for each product
+    # combine the gender, interest, occasion, and relationship columns into a single string for each product
+    genders = user_pref['gender'] if 'any' not in user_pref['gender'] else [
+        'any']
 
     interests = user_pref['interests'] if 'any' not in user_pref['interests'] else [
         'any']
@@ -220,6 +222,13 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=240):
         'any']
     relationship = [user_pref['relationship']] if 'any' != user_pref['relationship'] else [
         'any']
+
+    genders_col = product_metadata['gender'].apply(
+        lambda x:
+        'any' if 'any' in genders
+        else
+        '\', \''.join(sorted(str(val) for val in genders)) + ' a' if 'any' in x
+        else '\', \''.join(sorted([str(val) for val in x if str(val) in genders])))
 
     interests_col = product_metadata['interests'].apply(
         lambda x:
@@ -244,15 +253,13 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=240):
         # else
         '\', \''.join(sorted([str(val) for val in x if str(val) in relationship])))
 
+    product_metadata['genderCol'] = genders_col
     product_metadata['interestCol'] = interests_col
     product_metadata['occasionCol'] = occasions_col
     product_metadata['relationshipCol'] = relationships_col
-    product_metadata['ior'] = '[\''+product_metadata['interestCol'] + '\'] [\'' + \
+    product_metadata['gior'] = '[\''+product_metadata['genderCol'] + '\'] [\''+product_metadata['interestCol'] + '\'] [\'' + \
         product_metadata['occasionCol'] + '\'] [\'' + \
         product_metadata['relationshipCol'] + '\']'
-
-    # product_metadata['ior'] = product_metadata[['interests', 'occasions', 'relationships']].apply(
-    #     lambda x: ' '.join(x.dropna().astype(str)), axis=1)
 
     # get the subset of product metadata based on user preferences
     subset_metadata = product_metadata.copy()
@@ -297,15 +304,15 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=240):
     # create a CountVectorizer object to create a sparse matrix of word counts for each product metadata string
     user_pref['interests'].sort()
     user_pref['occasion'].sort()
-    user_pref_ior = ''+str(user_pref['interests']) + ' ' + \
+    user_pref_gior = ''+str(user_pref['gender']) + ' ' + \
+        ''+str(user_pref['interests']) + ' ' + \
         str(user_pref['occasion']) + \
         ' [\'' + user_pref['relationship'] + '\']'
 
     count = CountVectorizer()
 
-    count_matrix = count.fit_transform(product_metadata['ior'])
-    # ior_matrix = count.transform(product_metadata['ior_str'])
-    user_pref_matrix = count.transform([user_pref_ior])
+    count_matrix = count.fit_transform(product_metadata['gior'])
+    user_pref_matrix = count.transform([user_pref_gior])
 
     # concatenate the count_matrix and ior_matrix into a single sparse matrix
 
