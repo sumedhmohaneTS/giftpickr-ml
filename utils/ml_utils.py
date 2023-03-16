@@ -181,7 +181,7 @@ def get_recommendations(user_pref, metadata_list, num_recommendations=12):
     return result_dict
 
 
-def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
+def get_recommendationsV2(user_pref, metadata_list, num_recommendations=240):
 
     if len(metadata_list) == 0:
         return []
