@@ -229,15 +229,17 @@ def get_recommendationsV2(user_pref, metadata_list, num_recommendations=24):
         lambda x:
         'any' if 'any' in occasion
         else
-        '\', \''.join(sorted(str(val) for val in occasion)) + ' a' if 'any' in x
-        else '\', \''.join(sorted([str(val) for val in x if str(val) in occasion])))
+        # '\', \''.join(sorted(str(val) for val in occasion)) + ' a' if 'any' in x
+        # else
+        '\', \''.join(sorted([str(val) for val in x if str(val) in occasion])))
 
     relationships_col = product_metadata['relationships'].apply(
         lambda x:
         'any' if 'any' in relationship
         else
-        '\', \''.join(sorted(str(val) for val in relationship)) + ' a' if 'any' in x
-        else '\', \''.join(sorted([str(val) for val in x if str(val) in relationship])))
+        # '\', \''.join(sorted(str(val) for val in relationship)) + ' a' if 'any' in x
+        # else
+        '\', \''.join(sorted([str(val) for val in x if str(val) in relationship])))
 
     product_metadata['interestCol'] = interests_col
     product_metadata['occasionCol'] = occasions_col
